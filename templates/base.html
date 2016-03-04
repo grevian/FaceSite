@@ -1,0 +1,58 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/css/normalize.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker.standalone.min.css">
+
+
+    <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+    <script src="/js/plugins.js"></script>
+    <script src="/js/main.js"></script>
+
+
+
+</head>
+<body>
+
+<div class="header-container">
+    <header class="wrapper clearfix">
+        <h1 class="title">Grevian Faces</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/upload">Upload</a></li>
+                <li><a href="/gallery">Gallery</a></li>
+                <li><a href="/admin">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+</div>
+
+<div class="main-container">
+    <div class="main wrapper clearfix">
+        {% block content %}{% endblock %}
+    </div> <!-- #main -->
+</div> <!-- #main-container -->
+
+<div class="footer-container">
+    <footer class="wrapper">
+        <h3>A Grevian Inc. Production</h3>
+    </footer>
+</div>
+</body>
+</html>

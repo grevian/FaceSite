@@ -1,0 +1,19 @@
+{% extends "templates/base.html" %}
+{% block content %}
+<article>
+    <header>
+        Upload a Face
+    </header>
+    <section>
+        <h2>Upload</h2>
+        <form method="post" action="{{ upload_url  }}" enctype="multipart/form-data">
+         <input type="file" name="face-file" id="face-file">
+         <input type="submit" value="Upload Face">
+        </form>
+    </section>
+   <footer>
+ A Grevian Inc. Production
+    </footer>
+</article>
+
+{% endblock %}
