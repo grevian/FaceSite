@@ -6,11 +6,14 @@
     </header>
     <section>
         <h2>Faces</h2>
-        <div>This is a place for face!</div>
+        {% for image in images %}
+        <div class="gallery-thumb">
+            <a href="/gallery/{{ image.key.id() }}">
+                <img src="{{ image.thumbnail_url }}" />
+            </a>
+        </div>
+        {% endfor %}
     </section>
-   <footer>
- A Grevian Inc. Production
-    </footer>
 </article>
 
 {% endblock %}
