@@ -3,12 +3,14 @@ import jinja2
 import os
 import logging
 
+from google.appengine.ext.deferred import deferred
 from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.ext import blobstore
 from google.appengine.api.images import get_serving_url_async
-from google.appengine.ext.ndb import Future
+from google.appengine.ext.ndb import Future, transactional
 
 from models import Image
+from vision import ImageAnalysis, analyze_image
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -43,9 +45,22 @@ class GCSUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
                 display_url=display_url_future.get_result(),
                 thumbnail_url=thumbnail_url_future.get_result()
             )
-            i.put()
 
+            @transactional
+            def defer_analyze_image():
+                image_key = i.put()
+
+                ia = ImageAnalysis(
+                        parent=image_key,
+                        id=image_key.id()
+                )
+                ia.put()
+
+                deferred.defer(analyze_image, image_key.id())
+
+            defer_analyze_image()
             self.redirect('/gallery/%s' % i.key.id())
+
         except Exception as e:
             logging.error(e)
             self.error(500)
