@@ -3,6 +3,8 @@ import webapp2
 import jinja2
 import os
 
+from google.appengine.ext import ndb
+
 from models import Image
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -23,19 +25,36 @@ class GalleryHandler(webapp2.RequestHandler):
 
 class ImageHandler(webapp2.RequestHandler):
     def get(self, image):
+        ctx = {}
 
-        i = Image.get_by_id(int(image))
+        image_key = ndb.Key('Image', int(image))
+        annotation_key = ndb.Key('Image', int(image), 'ImageAnalysis', int(image))
+        annotation_future = annotation_key.get_async()
+
+        i = image_key.get()
 
         if not i:
-            img_url = "/img/missing.png"
+            ctx['img_src'] = "/img/missing.png"
             logging.warn("Could not find image %s", image)
         else:
-            img_url = i.display_url
+            ctx['img_src'] = i.display_url
+
+        ia = annotation_future.get_result()
+
+        if ia:
+            try:
+                ia_data = {}
+                annotations = ia.full_result["responses"][0]["faceAnnotations"][0]
+                for a in ("angerLikelihood", "joyLikelihood", "sorrowLikelihood", "surpriseLikelihood",
+                          "headwearLikelihood", "detectionConfidence", "blurredLikelihood", "underExposedLikelihood"):
+                    ia_data[a] = annotations[a]
+                ctx['img_annotation'] = ia_data
+            except Exception as e:
+                logging.warn("Failed to unpack annotations, %s" % e)
+                ctx['img_annotation'] = {}
 
         template = JINJA_ENVIRONMENT.get_template('templates/image.html')
-        self.response.write(template.render({
-            'img_src': img_url
-        }))
+        self.response.write(template.render(ctx))
 
 
 class Main(webapp2.RequestHandler):

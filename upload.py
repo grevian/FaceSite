@@ -9,8 +9,8 @@ from google.appengine.ext import blobstore
 from google.appengine.api.images import get_serving_url_async
 from google.appengine.ext.ndb import Future, transactional
 
-from models import Image
-from vision import ImageAnalysis, analyze_image
+from models import Image, ImageAnalysis
+from vision import analyze_image
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -32,16 +32,19 @@ class GCSUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
         try:
             upload = self.get_uploads()[0]
+            info = self.get_file_infos()[0]
             blob_key = upload.key()
 
             # Generate a Thumbnail and inline displayable sized image
             thumbnail_url_future = get_serving_url_async(blob_key, size=120)
             display_url_future = get_serving_url_async(blob_key, size=480)
+
             Future.wait_all([display_url_future, thumbnail_url_future])
 
             # Store the image metadata
             i = Image(
                 bucket_key=str(blob_key),
+                gs_object_name=info.gs_object_name.split("/")[-1:][0],
                 display_url=display_url_future.get_result(),
                 thumbnail_url=thumbnail_url_future.get_result()
             )

@@ -1,13 +1,11 @@
 import logging
 import datetime
 
-from google.appengine.ext import ndb
-
-import googleapiclient
-from oauth2client.client import GoogleCredentials
 from googleapiclient import discovery
+from googleapiclient import errors as api_errors
+from oauth2client.client import GoogleCredentials
 
-from models import Image
+from models import Image, ImageAnalysis
 
 ANALYSIS_ENDPOINT = "https://vision.googleapis.com/v1/images:annotate"
 
@@ -30,12 +28,6 @@ def build_request_body(image_location):
     }]
 
 
-class ImageAnalysis(ndb.Model):
-    failed = ndb.DateTimeProperty()
-    started = ndb.DateTimeProperty(auto_now_add=True)
-    full_result = ndb.JsonProperty()
-
-
 def analyze_image(image_key_id):
     image = Image.get_by_id(int(image_key_id))
     ia = ImageAnalysis.get_by_id(int(image_key_id), parent=image.key)
@@ -45,13 +37,13 @@ def analyze_image(image_key_id):
 
     request = service.images().annotate(
             body={
-                'requests': build_request_body(str(image.bucket_key)),
+                'requests': build_request_body(str(image.gs_object_name)),
             }
     )
 
     try:
         response = request.execute()
-    except googleapiclient.errors.HttpError as e:
+    except api_errors.HttpError as e:
         logging.warn("Failed to analyze image: %s" % e)
         ia.failed = datetime.datetime.now()
         ia.put()
@@ -67,5 +59,5 @@ def analyze_image(image_key_id):
         return
 
     ia.full_result = response
+    ia.completed = datetime.datetime.now()
     ia.put()
-

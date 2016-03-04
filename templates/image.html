@@ -1,5 +1,6 @@
 {% extends "templates/base.html" %}
 {% block content %}
+<script src="/js/image.js"></script>
 <article>
     <header>
         Grevian Faces
@@ -7,8 +8,37 @@
     <section>
         <h2>Image</h2>
         <div>
-         <img src="{{ img_src }}" />
+            <img src="{{ img_src }}" />
         </div>
+        <div id="datablock">
+            <div id="preloaded-marker" style="display: none;">{{ img_annotation.detectionConfidence|default("0") }}</div>
+            <dl>
+                <dt>Anger</dt>
+                <dd id="anger-rating">{{ img_annotation.angerLikelihood }}</dd>
+
+                <dt>Joy</dt>
+                <dd id="joy-rating">{{ img_annotation.joyLikelihood }}</dd>
+
+                <dt>Sorrow</dt>
+                <dd id="sorrow-rating">{{ img_annotation.sorrowLikelihood }}</dd>
+
+                <dt>Surprise</dt>
+                <dd id="surprise-rating">{{ img_annotation.surpriseLikelihood }}</dd>
+
+                <dt>Hat-Factor</dt>
+                <dd id="hat-rating">{{ img_annotation.headwearLikelihood }}</dd>
+
+                <dt>Confidence of Detection</dt>
+                <dd id="confidence-rating">{{ img_annotation.detectionConfidence }}</dd>
+
+                <dt>Blurred</dt>
+                <dd id="blurred-rating">{{ img_annotation.blurredLikelihood }}</dd>
+
+                <dt>Underexposed</dt>
+                <dd id="underexposed-rating">{{ img_annotation.underExposedLikelihood }}</dd>
+            </dl>
+        </div>
+
     </section>
 </article>
 
