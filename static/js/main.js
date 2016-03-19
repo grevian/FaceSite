@@ -78,6 +78,11 @@ function setupWebcam() {
         if (!$("#enable-camera").attr("data-camera-attached")) {
             console.log("Initializing Webcam");
             $("#camera-container").slideDown(500, function(){
+                Webcam.set({
+                    image_format: "png",
+                    dest_width: 1280,
+                    dest_height: 960
+                });
                 Webcam.attach("#my_camera");
                 $("#enable-camera").attr("data-camera-attached", true)
             });
