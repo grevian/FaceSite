@@ -1,5 +1,6 @@
 import logging
 import datetime
+import socket
 
 from googleapiclient import discovery
 from googleapiclient import errors as api_errors
@@ -13,6 +14,7 @@ credentials = GoogleCredentials.get_application_default()
 service = discovery.build('vision', 'v1', credentials=credentials,
                           discoveryServiceUrl='https://{api}.googleapis.com/$discovery/rest?version={apiVersion}')
 
+socket.setdefaulttimeout(60)
 
 def build_request_body(image_location):
     return [{
@@ -21,10 +23,32 @@ def build_request_body(image_location):
                 "gcsImageUri": "gs://grevian-facebucket/%s" % image_location
             },
         },
-        'features': [{
-            'type': 'FACE_DETECTION',
-            'maxResults': 10,
-        }]
+        'features': [
+            {
+                'type': 'FACE_DETECTION',
+                'maxResults': 5
+            },
+            {
+                'type': 'LANDMARK_DETECTION',
+                'maxResults': 4,
+            },
+            {
+                'type': 'LOGO_DETECTION',
+                'maxResults': 8,
+            },
+            {
+                'type': 'LABEL_DETECTION',
+                'maxResults': 15,
+            },
+            {
+                'type': 'TEXT_DETECTION',
+                'maxResults': 10,
+            },
+            {
+                'type': 'SAFE_SEARCH_DETECTION',
+                'maxResults': 3,
+            },
+        ]
     }]
 
 
