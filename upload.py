@@ -36,8 +36,8 @@ class GCSUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
             blob_key = upload.key()
 
             # Generate a Thumbnail and inline displayable sized image
-            thumbnail_url_future = get_serving_url_async(blob_key, size=120)
-            display_url_future = get_serving_url_async(blob_key, size=480)
+            thumbnail_url_future = get_serving_url_async(blob_key, size=120, secure_url=True)
+            display_url_future = get_serving_url_async(blob_key, size=480, secure_url=True)
 
             Future.wait_all([display_url_future, thumbnail_url_future])
 
@@ -62,7 +62,13 @@ class GCSUploadHandler(blobstore_handlers.BlobstoreUploadHandler):
                 deferred.defer(analyze_image, image_key.id())
 
             defer_analyze_image()
-            self.redirect('/gallery/%s' % i.key.id())
+
+            # For webcam AJAX Uploads just return the gallery path and it'll handle the redirect itself
+            if self.request.get("webcam", None):
+                self.response.write('/gallery/%s' % i.key.id())
+            # Otherwise for a browser upload, redirect to the gallery
+            else:
+                self.redirect('/gallery/%s' % i.key.id())
 
         except Exception as e:
             logging.error(e)

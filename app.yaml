@@ -6,23 +6,29 @@ threadsafe: yes
 
 handlers:
 - url: /favicon\.ico
+  secure: always
   static_files: favicon.ico
   upload: favicon\.ico
 
 - url: /css
+  secure: always
   static_dir: static/css
 
 - url: /img
+  secure: always
   static_dir: static/img
 
 - url: /js
+  secure: always
   static_dir: static/js
 
 - url: /admin
+  secure: always
   script: main.app
   login: admin
 
 - url: .*
+  secure: always
   script: main.app
 
 libraries:

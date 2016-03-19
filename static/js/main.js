@@ -48,3 +48,36 @@ function pollImage(image_id) {
         }
     );
 }
+
+$(document).ready(function() {
+    // Thanks https://github.com/jhuckaby/webcamjs
+    $("#camera-container").hide();
+
+    $("#snapshot").click(function() {
+        $("#snapshot").prop("disabled", true);
+        Webcam.snap( function(data_uri) {
+            var upload_url = $("#image-upload-form").attr("action");
+            Webcam.upload( data_uri, upload_url, function(code, text) {
+                if (code == 200) {
+                    window.location.replace(text);
+                } else {
+                    console.log(code);
+                    console.log(text);
+                    // Maybe try again?
+                    $("#snapshot").prop("disabled", false);
+                }
+            } );
+        });
+    });
+
+    $("#enable-camera").click(function(){
+        if (!$("#enable-camera").attr("data-camera-attached")) {
+            console.log("Initializing Webcam");
+            $("#camera-container").slideDown(500, function(){
+                Webcam.attach("#my_camera");
+                $("#enable-camera").attr("data-camera-attached", true)
+            });
+        }
+        return false;
+    });
+});
