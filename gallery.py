@@ -1,6 +1,7 @@
 import logging
 import webapp2
 import jinja2
+import json
 import os
 
 from google.appengine.ext import ndb
@@ -52,6 +53,8 @@ class ImageHandler(webapp2.RequestHandler):
             except Exception as e:
                 logging.warn("Failed to unpack annotations, %s" % e)
                 ctx['img_annotation'] = {}
+            finally:
+                ctx['full_results'] = json.dumps(ia.full_result)
 
         template = JINJA_ENVIRONMENT.get_template('templates/image.html')
         self.response.write(template.render(ctx))

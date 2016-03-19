@@ -38,6 +38,16 @@
                 <dd id="underexposed-rating">{{ img_annotation.underExposedLikelihood }}</dd>
             </dl>
         </div>
+        {% if full_results %}
+         <a href="#" id="show-full-results">Show extended results</a>
+        {% else %}
+         <a href="#" id="show-full-results">Waiting for results...</a>
+        {% endif %}
+        <div id="full-result-container">
+        </div>
+        <div id="full-result-value" style="display: none;">
+            {{ full_results|default("0") }}
+        </div>
 
     </section>
 </article>
