@@ -5,6 +5,7 @@ import json
 import os
 
 from google.appengine.ext import ndb
+from google.appengine.ext.ndb import Cursor
 
 from models import Image
 
@@ -16,12 +17,21 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 class GalleryHandler(webapp2.RequestHandler):
     def get(self):
-        image_list = Image.query().order(-Image.uploaded).fetch(20)
+        cursor = self.request.get("cursor", None)
+        if cursor:
+            cursor = Cursor(urlsafe=cursor)
+        ctx = {}
+
+        image_q = Image.query().order(-Image.uploaded)
+        image_list, next_curs, more = image_q.fetch_page(20, start_cursor=cursor)
+
+        ctx['images'] = list(image_list)
+
+        if more:
+            ctx['cursor'] = next_curs.urlsafe()
 
         template = JINJA_ENVIRONMENT.get_template('templates/gallery.html')
-        self.response.write(template.render({
-            'images': list(image_list)
-        }))
+        self.response.write(template.render(ctx))
 
 
 class ImageHandler(webapp2.RequestHandler):
