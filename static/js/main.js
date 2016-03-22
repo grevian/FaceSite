@@ -81,7 +81,7 @@ function setupWebcam() {
                 Webcam.set({
                     image_format: "png",
                     dest_width: 1280,
-                    dest_height: 960
+                    dest_height: 720 
                 });
                 Webcam.attach("#my_camera");
                 $("#enable-camera").attr("data-camera-attached", true)
